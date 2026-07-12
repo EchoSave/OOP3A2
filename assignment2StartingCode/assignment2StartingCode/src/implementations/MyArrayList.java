@@ -25,7 +25,8 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
         return iterIndex < size;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public E next() throws NoSuchElementException {
         if (!hasNext()) {
             throw new NoSuchElementException("No more elements");
@@ -112,7 +113,8 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
     // get / set
     // -------------------------
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public E get(int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Invalid index");
@@ -132,7 +134,8 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
             throw new IndexOutOfBoundsException("Invalid index");
         }
 
-        E oldValue = (E) data[index];
+        @SuppressWarnings("unchecked")
+		E oldValue = (E) data[index];
         data[index] = toChange;
         return oldValue;
     }
@@ -227,31 +230,25 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
     }
 
     @Override
-    public Object[] toArray(Object[] toHold) throws NullPointerException {
+    @SuppressWarnings("unchecked")
+    public E[] toArray(E[] toHold) throws NullPointerException {
         if (toHold == null) {
             throw new NullPointerException("Array cannot be null");
         }
 
-        // If provided array is too small, create a new array of the SAME TYPE
         if (toHold.length < size) {
-            Object[] newArr = new Object[size];
-            for (int i = 0; i < size; i++) {
-                newArr[i] = data[i];
-            }
-            return newArr;
+            // Create a new array of the same runtime type
+            return (E[]) java.util.Arrays.copyOf(data, size, toHold.getClass());
         }
 
-        // Otherwise copy into provided array
-        for (int i = 0; i < size; i++) {
-            toHold[i] = data[i];
-        }
+        // Copy into provided array
+        System.arraycopy(data, 0, toHold, 0, size);
 
-        // If array is larger, put null after last element
+        // Null-terminate if array is larger
         if (toHold.length > size) {
             toHold[size] = null;
         }
 
         return toHold;
     }
-
 }
