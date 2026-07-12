@@ -1,105 +1,257 @@
 package implementations;
 
 import java.util.NoSuchElementException;
+import utilities.Iterator;
+import utilities.ListADT;
 
-import utilities.*;
+public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
 
-public class MyArrayList implements ListADT, Iterator{
+    private Object[] data;
+    private int size;
+    private int iterIndex;
 
-	@Override
-	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public MyArrayList() {
+        data = new Object[10];   // default capacity
+        size = 0;
+        iterIndex = 0;
+    }
 
-	@Override
-	public Object next() throws NoSuchElementException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    // -------------------------
+    // Iterator methods
+    // -------------------------
 
-	@Override
-	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public boolean hasNext() {
+        return iterIndex < size;
+    }
 
-	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public E next() throws NoSuchElementException {
+        if (!hasNext()) {
+            throw new NoSuchElementException("No more elements");
+        }
+        return (E) data[iterIndex++];
+    }
 
-	@Override
-	public boolean add(int index, Object toAdd) throws NullPointerException, IndexOutOfBoundsException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public Iterator<E> iterator() {
+        iterIndex = 0;
+        return this;
+    }
 
-	@Override
-	public boolean add(Object toAdd) throws NullPointerException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    // -------------------------
+    // Core List methods
+    // -------------------------
 
-	@Override
-	public boolean addAll(ListADT toAdd) throws NullPointerException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public int size() {
+        return size;
+    }
 
-	@Override
-	public Object get(int index) throws IndexOutOfBoundsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-	@Override
-	public Object remove(int index) throws IndexOutOfBoundsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void clear() {
+        size = 0;
+    }
 
-	@Override
-	public Object remove(Object toRemove) throws NullPointerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    // -------------------------
+    // Add methods
+    // -------------------------
 
-	@Override
-	public Object set(int index, Object toChange) throws NullPointerException, IndexOutOfBoundsException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean add(E toAdd) throws NullPointerException {
+        if (toAdd == null) {
+            throw new NullPointerException("Cannot add null");
+        }
 
-	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+        ensureCapacity();
+        data[size] = toAdd;
+        size++;
+        return true;
+    }
 
-	@Override
-	public boolean contains(Object toFind) throws NullPointerException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean add(int index, E toAdd)
+            throws NullPointerException, IndexOutOfBoundsException {
 
-	@Override
-	public Object[] toArray(Object[] toHold) throws NullPointerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        if (toAdd == null) {
+            throw new NullPointerException("Cannot add null");
+        }
 
-	@Override
-	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Invalid index");
+        }
 
-	@Override
-	public Iterator iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        ensureCapacity();
+
+        // shift right
+        for (int i = size; i > index; i--) {
+            data[i] = data[i - 1];
+        }
+
+        data[index] = toAdd;
+        size++;
+        return true;
+    }
+
+    private void ensureCapacity() {
+        if (size == data.length) {
+            Object[] newArr = new Object[data.length * 2];
+            for (int i = 0; i < data.length; i++) {
+                newArr[i] = data[i];
+            }
+            data = newArr;
+        }
+    }
+
+    // -------------------------
+    // get / set
+    // -------------------------
+
+    @Override
+    public E get(int index) throws IndexOutOfBoundsException {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Invalid index");
+        }
+        return (E) data[index];
+    }
+
+    @Override
+    public E set(int index, E toChange)
+            throws NullPointerException, IndexOutOfBoundsException {
+
+        if (toChange == null) {
+            throw new NullPointerException("Cannot set null");
+        }
+
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Invalid index");
+        }
+
+        E oldValue = (E) data[index];
+        data[index] = toChange;
+        return oldValue;
+    }
+
+    // -------------------------
+    // remove methods
+    // -------------------------
+
+    @Override
+    public E remove(int index) throws IndexOutOfBoundsException {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Invalid index");
+        }
+
+        E removed = (E) data[index];
+
+        // shift left
+        for (int i = index; i < size - 1; i++) {
+            data[i] = data[i + 1];
+        }
+
+        data[size - 1] = null;
+        size--;
+        return removed;
+    }
+
+    @Override
+    public E remove(E toRemove) throws NullPointerException {
+        if (toRemove == null) {
+            throw new NullPointerException("Cannot remove null");
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (data[i].equals(toRemove)) {
+                return remove(i);
+            }
+        }
+
+        return null; // not found
+    }
+
+    // -------------------------
+    // contains
+    // -------------------------
+
+    @Override
+    public boolean contains(E toFind) throws NullPointerException {
+        if (toFind == null) {
+            throw new NullPointerException("Cannot search for null");
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (data[i].equals(toFind)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // -------------------------
+    // addAll
+    // -------------------------
+
+    @Override
+    public boolean addAll(ListADT<? extends E> toAdd) throws NullPointerException {
+        if (toAdd == null) {
+            throw new NullPointerException("Cannot add from a null list");
+        }
+
+        boolean addedSomething = false;
+
+        for (int i = 0; i < toAdd.size(); i++) {
+            E element = toAdd.get(i);
+            this.add(element);
+            addedSomething = true;
+        }
+
+        return addedSomething;
+    }
+
+    // -------------------------
+    // toArray methods
+    // -------------------------
+
+    @Override
+    public Object[] toArray() {
+        Object[] newArr = new Object[size];
+        for (int i = 0; i < size; i++) {
+            newArr[i] = data[i];
+        }
+        return newArr;
+    }
+
+    @Override
+    public Object[] toArray(Object[] toHold) throws NullPointerException {
+        if (toHold == null) {
+            throw new NullPointerException("Array cannot be null");
+        }
+
+        // If provided array is too small, create a new array of the SAME TYPE
+        if (toHold.length < size) {
+            Object[] newArr = new Object[size];
+            for (int i = 0; i < size; i++) {
+                newArr[i] = data[i];
+            }
+            return newArr;
+        }
+
+        // Otherwise copy into provided array
+        for (int i = 0; i < size; i++) {
+            toHold[i] = data[i];
+        }
+
+        // If array is larger, put null after last element
+        if (toHold.length > size) {
+            toHold[size] = null;
+        }
+
+        return toHold;
+    }
 
 }
