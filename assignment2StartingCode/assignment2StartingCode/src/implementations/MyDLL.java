@@ -1,7 +1,5 @@
 package implementations;
  
-import java.util.NoSuchElementException;
- 
 import utilities.*;
  
 /**
@@ -76,7 +74,7 @@ public class MyDLL<E> implements ListADT<E> {
 		return add(size, toAdd); // uses method above, but for last element
 	}
  
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") // i think this isn't java.util
 	@Override
 	public boolean addAll(ListADT<? extends E> toAdd) throws NullPointerException {
 		// cannot add null element
@@ -160,7 +158,7 @@ public class MyDLL<E> implements ListADT<E> {
 		return false;
 	}
  
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") 
 	@Override
 	public E[] toArray(E[] toHold) throws NullPointerException {
 		if (toHold == null) {
