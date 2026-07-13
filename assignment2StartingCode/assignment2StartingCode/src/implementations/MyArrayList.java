@@ -4,99 +4,14 @@ import java.util.NoSuchElementException;
 import utilities.Iterator;
 import utilities.ListADT;
 
-public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
+public class MyArrayList<E> implements ListADT<E> {
 
     private Object[] data;
     private int size;
-    private int iterIndex;
 
     public MyArrayList() {
-        data = new Object[10];   // default capacity
+        data = new Object[10];
         size = 0;
-        iterIndex = 0;
-    }
-
-    // -------------------------
-    // Iterator methods
-    // -------------------------
-
-    @Override
-    public boolean hasNext() {
-        return iterIndex < size;
-    }
-
-    @SuppressWarnings("unchecked")
-	@Override
-    public E next() throws NoSuchElementException {
-        if (!hasNext()) {
-            throw new NoSuchElementException("No more elements");
-        }
-        return (E) data[iterIndex++];
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        iterIndex = 0;
-        return this;
-    }
-
-    // -------------------------
-    // Core List methods
-    // -------------------------
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    @Override
-    public void clear() {
-        size = 0;
-    }
-
-    // -------------------------
-    // Add methods
-    // -------------------------
-
-    @Override
-    public boolean add(E toAdd) throws NullPointerException {
-        if (toAdd == null) {
-            throw new NullPointerException("Cannot add null");
-        }
-
-        ensureCapacity();
-        data[size] = toAdd;
-        size++;
-        return true;
-    }
-
-    @Override
-    public boolean add(int index, E toAdd)
-            throws NullPointerException, IndexOutOfBoundsException {
-
-        if (toAdd == null) {
-            throw new NullPointerException("Cannot add null");
-        }
-
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Invalid index");
-        }
-
-        ensureCapacity();
-
-        // shift right
-        for (int i = size; i > index; i--) {
-            data[i] = data[i - 1];
-        }
-
-        data[index] = toAdd;
-        size++;
-        return true;
     }
 
     private void ensureCapacity() {
@@ -109,50 +24,74 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
         }
     }
 
-    // -------------------------
-    // get / set
-    // -------------------------
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public void clear() {
+        data = new Object[10];
+        size = 0;
+    }
+
+    @Override
+    public boolean add(int index, E toAdd) {
+        if (toAdd == null)
+            throw new NullPointerException("Cannot add null values");
+
+        if (index < 0 || index > size)
+            throw new IndexOutOfBoundsException("Stay within 0 and " + size);
+
+        ensureCapacity();
+
+        for (int i = size; i > index; i--) {
+            data[i] = data[i - 1];
+        }
+
+        data[index] = toAdd;
+        size++;
+        return true;
+    }
+
+    @Override
+    public boolean add(E toAdd) {
+        if (toAdd == null)
+            throw new NullPointerException("Cannot add null values");
+
+        ensureCapacity();
+        data[size++] = toAdd;
+        return true;
+    }
+
+    @Override
+    public boolean addAll(ListADT<? extends E> toAdd) {
+        if (toAdd == null)
+            throw new NullPointerException("Cannot add null values");
+
+        for (int i = 0; i < toAdd.size(); i++) {
+            add(toAdd.get(i));
+        }
+        return true;
+    }
 
     @SuppressWarnings("unchecked")
-	@Override
-    public E get(int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Invalid index");
-        }
+    @Override
+    public E get(int index) {
+        if (index < 0 || index >= size)
+            throw new IndexOutOfBoundsException("Stay within 0 and " + size);
+
         return (E) data[index];
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public E set(int index, E toChange)
-            throws NullPointerException, IndexOutOfBoundsException {
-
-        if (toChange == null) {
-            throw new NullPointerException("Cannot set null");
-        }
-
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Invalid index");
-        }
-
-        @SuppressWarnings("unchecked")
-		E oldValue = (E) data[index];
-        data[index] = toChange;
-        return oldValue;
-    }
-
-    // -------------------------
-    // remove methods
-    // -------------------------
-
-    @Override
-    public E remove(int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Invalid index");
-        }
+    public E remove(int index) {
+        if (index < 0 || index >= size)
+            throw new IndexOutOfBoundsException("Stay within 0 and " + size);
 
         E removed = (E) data[index];
 
-        // shift left
         for (int i = index; i < size - 1; i++) {
             data[i] = data[i + 1];
         }
@@ -163,70 +102,45 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
     }
 
     @Override
-    public E remove(E toRemove) throws NullPointerException {
-        if (toRemove == null) {
-            throw new NullPointerException("Cannot remove null");
-        }
+    public E remove(E toRemove) {
+        if (toRemove == null)
+            throw new NullPointerException("Cannot add null values");
 
-        for (int i = 0; i < size; i++) {
-            if (data[i].equals(toRemove)) {
-                return remove(i);
-            }
-        }
+        int index = indexOf(toRemove);
+        if (index == -1)
+            return null;
 
-        return null; // not found
+        return remove(index);
     }
 
-    // -------------------------
-    // contains
-    // -------------------------
+    @Override
+    public E set(int index, E toChange) {
+        if (toChange == null)
+            throw new NullPointerException("Cannot add null values");
+
+        if (index < 0 || index >= size)
+            throw new IndexOutOfBoundsException("Stay within 0 and " + size);
+
+        E prev = get(index);
+        data[index] = toChange;
+        return prev;
+    }
 
     @Override
-    public boolean contains(E toFind) throws NullPointerException {
-        if (toFind == null) {
-            throw new NullPointerException("Cannot search for null");
-        }
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public boolean contains(E toFind) {
+        if (toFind == null)
+            throw new NullPointerException("Cannot add null values");
 
         for (int i = 0; i < size; i++) {
-            if (data[i].equals(toFind)) {
+            if (data[i].equals(toFind))
                 return true;
-            }
         }
         return false;
-    }
-
-    // -------------------------
-    // addAll
-    // -------------------------
-
-    @Override
-    public boolean addAll(ListADT<? extends E> toAdd) throws NullPointerException {
-        if (toAdd == null) {
-            throw new NullPointerException("Cannot add from a null list");
-        }
-
-        boolean addedSomething = false;
-
-        for (int i = 0; i < toAdd.size(); i++) {
-            E element = toAdd.get(i);
-            this.add(element);
-            addedSomething = true;
-        }
-
-        return addedSomething;
-    }
-
-    // -------------------------
-    // toArray methods
-    // -------------------------
-
-    @Override
-    public Object[] toArray() {
-        Object[] newArr = new Object[size];
-        for (int i = 0; i < size; i++) {
-            newArr[i] = data[i];
-        }
-        return newArr;
     }
 
     @Override
@@ -237,18 +151,53 @@ public class MyArrayList<E> implements ListADT<E>, Iterator<E> {
         }
 
         if (toHold.length < size) {
-            // Create a new array of the same runtime type
             return (E[]) java.util.Arrays.copyOf(data, size, toHold.getClass());
         }
 
-        // Copy into provided array
         System.arraycopy(data, 0, toHold, 0, size);
-
-        // Null-terminate if array is larger
         if (toHold.length > size) {
             toHold[size] = null;
         }
 
         return toHold;
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object[] arr = new Object[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = data[i];
+        }
+        return arr;
+    }
+
+    private int indexOf(E toFind) {
+        for (int i = 0; i < size; i++) {
+            if (data[i].equals(toFind))
+                return i;
+        }
+        return -1;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new MyIterator();
+    }
+
+    private class MyIterator implements Iterator<E> {
+        private int cursor = 0;
+
+        @Override
+        public boolean hasNext() {
+            return cursor < size;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public E next() {
+            if (!hasNext())
+                throw new NoSuchElementException("No more elements");
+            return (E) data[cursor++];
+        }
     }
 }
