@@ -60,15 +60,34 @@ public class MyStack<E> implements StackADT<E> {
 
 	@Override
 	public Object[] toArray() {
-		return list.toArray();
+		Object[] result = new Object[list.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = list.get(list.size() - 1 - i);
+		}
+		return result;
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public E[] toArray(E[] holder) throws NullPointerException {
 		if (holder == null) {
 			throw new NullPointerException("The provided array cannot be null");
 		}
-		return list.toArray(holder);
+
+		if (holder.length < list.size()) {
+			holder = (E[]) java.lang.reflect.Array.newInstance(
+					holder.getClass().getComponentType(), list.size());
+		}
+
+		for (int i = 0; i < list.size(); i++) {
+			holder[i] = list.get(list.size() - 1 - i);
+		}
+
+		if (holder.length > list.size()) {
+			holder[list.size()] = null;
+		}
+
+		return holder;
 	}
 
 	@Override

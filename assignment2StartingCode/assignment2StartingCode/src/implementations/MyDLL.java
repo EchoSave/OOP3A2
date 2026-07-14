@@ -235,7 +235,7 @@ public class MyDLL<E> implements ListADT<E> {
 		return node.getElement();
 	}
  
-	/** "Not sure if we need this, its hard to understand" - Josh
+	/** 
 	 * Iterator that walks over a snapshot (deep copy) of the list's
 	 * elements at the time iterator() was called, per the Iterator
 	 * interface contract - it does NOT reflect later modifications
