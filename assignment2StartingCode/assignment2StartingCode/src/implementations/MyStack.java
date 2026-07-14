@@ -2,152 +2,99 @@ package implementations;
 
 import java.util.EmptyStackException;
 import java.util.NoSuchElementException;
-import utilities.Iterator;
-import utilities.StackADT;
 
-/**
- * An array-based implementation of a LIFO stack using MyArrayList.
- *
- * @param <E> the type of elements held in this stack
- */
-public class MyStack<E> implements StackADT<E> {
+import utilities.*;
 
-	private MyArrayList<E> list;
+public class MyStack implements StackADT, Iterator{
 
-	/**
-	 * Initializes an empty stack.
-	 */
-	public MyStack() {
-		list = new MyArrayList<>();
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-	// Add an element to the top of the stack
 	@Override
-	public void push(E toAdd) throws NullPointerException {
-		if (toAdd == null) {
-			throw new NullPointerException("Cannot push null values onto the stack");
-		}
-		list.add(toAdd);
+	public Object next() throws NoSuchElementException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	// Get and remove the top element of the stack
 	@Override
-	public E pop() throws EmptyStackException {
-		if (isEmpty()) {
-			throw new EmptyStackException();
-		}
-		return list.remove(list.size() - 1);
+	public void push(Object toAdd) throws NullPointerException {
+		// TODO Auto-generated method stub
+		
 	}
 
-	// Get the top element of the stack without removing it
 	@Override
-	public E peek() throws EmptyStackException {
-		if (isEmpty()) {
-			throw new EmptyStackException();
-		}
-		return list.get(list.size() - 1);
+	public Object pop() throws EmptyStackException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object peek() throws EmptyStackException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void clear() {
-		list.clear();
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return list.isEmpty();
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public Object[] toArray() {
-		return list.toArray();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public E[] toArray(E[] holder) throws NullPointerException {
-		if (holder == null) {
-			throw new NullPointerException("The provided array cannot be null");
-		}
-		return list.toArray(holder);
+	public Object[] toArray(Object[] holder) throws NullPointerException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public boolean contains(E toFind) throws NullPointerException {
-		if (toFind == null) {
-			throw new NullPointerException("Search target cannot be null");
-		}
-		return list.contains(toFind);
-	}
-
-	// Search for an element in the stack and return its 1-based position from the
-	// top
-	@Override
-	public int search(E toFind) {
-		if (toFind == null) {
-			return -1;
-		}
-
-		for (int i = list.size() - 1; i >= 0; i--) {
-			if (list.get(i).equals(toFind)) {
-				return list.size() - i;
-			}
-		}
-		return -1;
+	public boolean contains(Object toFind) throws NullPointerException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return new StackIterator();
+	public int search(Object toFind) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
-	// Check if this stack is equal to another stack
 	@Override
-	public boolean equals(StackADT<E> that) {
-		if (that == null || this.size() != that.size()) {
-			return false;
-		}
+	public Iterator iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		// Create the copy of the other stack to compare
-		Object[] thisArr = this.toArray();
-		Object[] thatArr = that.toArray();
-
-		for (int i = 0; i < thisArr.length; i++) {
-			if (!thisArr[i].equals(thatArr[i])) {
-				return false;
-			}
-		}
-		return true;
+	@Override
+	public boolean equals(StackADT that) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public int size() {
-		return list.size();
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public boolean stackOverflow() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/**
-	 * Inner class implementing Iterator to traverse the stack in LIFO order (top to
-	 * bottom).
-	 */
-	private class StackIterator implements Iterator<E> {
-		// The current index for the iterator, starting from the top of the stack
-		private int current = list.size() - 1;
-
-		@Override
-		public boolean hasNext() {
-			return current >= 0;
-		}
-
-		@Override
-		public E next() throws NoSuchElementException {
-			if (!hasNext()) {
-				throw new NoSuchElementException("No more elements in the stack iterator");
-			}
-			return list.get(current--);
-		}
-	}
 }

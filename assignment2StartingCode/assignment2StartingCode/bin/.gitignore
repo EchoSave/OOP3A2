@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /appDomain/
 /exceptions/
 /implementations/
 /unitTests/
+=======
+/exceptions/
+/unitTests/
+/appDomain/
+/implementations/
+>>>>>>> parent of aedeada (Implement MyStack class)
 /utilities/
 /xml/
